@@ -4,12 +4,12 @@
 //defining the struct containing the data in one epoch 
 typedef struct {
     double numsat;
-    double day;
+    double year;
     double month;
+    double day;
     double hour;
     double minute;
-    double sec;
-    double mlsec;
+    double seconds;
     double a0;
     double a1;
     double a2;
@@ -29,7 +29,7 @@ typedef struct {
     double Crc;
     double omega;
     double OMEGADOT;
-    double isec;
+    double idot;
     double L2;
     double GPSweek;
     double L2pCODE;
@@ -43,12 +43,12 @@ typedef struct {
 // data printing for checkups it was done during debugging but useful as a check up of how well the data is being parsed 
 void print_data(navobs nav) {
     printf("numsat: %i\n", nav.numsat);
-    printf("day: %i\n", nav.day);
+    printf("year: %i\n", nav.year);
     printf("month: %i\n", nav.month);
+    printf("day: %i\n", nav.day);
     printf("hour: %i\n", nav.hour);
-    printf("minute: %i\n", nav.minute);
-    printf("seconds: %i\n", nav.sec);
-    printf("milsec: %lf\n", nav.mlsec);
+    printf("minutes: %i\n", nav.minute);
+    printf("seconds: %lf\n", nav.seconds);
     printf("A0: %.20lf\n", nav.a0);
     printf("A1: %.20lf\n", nav.a1);
     printf("A2: %.20lf\n", nav.a2);
@@ -68,7 +68,7 @@ void print_data(navobs nav) {
     printf("Crc: %.20lf\n", nav.Crc);
     printf("omega: %.20lf\n", nav.omega);
     printf("OMEGADOT: %.20lf\n", nav.OMEGADOT);
-    printf("isec: %.20lf\n", nav.isec);
+    printf("idot: %.20lf\n", nav.idot);
     printf("L2: %.20lf\n", nav.L2);
     printf("GPSweek: %.20lf\n", nav.GPSweek);
     printf("L2pCODE: %.20lf\n", nav.L2pCODE);
@@ -140,27 +140,28 @@ int main() {
     }
     // writing the first row of the csv data
     int line = 0 ;
-    fprintf(csvoutput, "numsat;day;month;hour;minute;sec;mlsec;a0;a1;a2;iod;crs;delta_n;M0;Cuc;e;cus;sqrtA;toe;cic;OMEGA;cis;I;Crc;omega;OMEGADOT;isec;L2;GPSweek;L2pCODE;precision_sat;state;TGD;IODC;trans_time;time_spare\n");
+    fprintf(csvoutput, "numsat;year;month;day;hour;minute;seconds;a0;a1;a2;iod;crs;delta_n;M0;Cuc;e;cus;sqrtA;toe;cic;OMEGA;cis;I;Crc;omega;OMEGADOT;idot;L2;GPSweek;L2pCODE;precision_sat;state;TGD;IODC;trans_time;time_spare\n");
     while (fgets(buffer1 , 600 , ninput)!= NULL){
         navobs myobs ; 
         //extracting data from the text and parsing it to the struct 
         sscanf(buffer1 ," %i %i %i %i %i %i %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf "
-                    , &myobs.numsat, &myobs.day, &myobs.month, &myobs.hour, &myobs.minute, &myobs.sec , &myobs.mlsec , &myobs.a0,&myobs.a1
+                    , &myobs.numsat, &myobs.year, &myobs.month, &myobs.day, &myobs.hour, &myobs.minute , &myobs.seconds , &myobs.a0,&myobs.a1
                     , &myobs.a2, &myobs.iod, &myobs.crs, &myobs.delta_n, &myobs.M0, &myobs.Cuc, &myobs.e, &myobs.cus, &myobs.sqrtA,
-               &myobs.toe, &myobs.cic, &myobs.OMEGA, &myobs.cis, &myobs.I, &myobs.Crc, &myobs.omega, &myobs.OMEGADOT, &myobs.isec, &myobs.L2, &myobs.GPSweek,
+               &myobs.toe, &myobs.cic, &myobs.OMEGA, &myobs.cis, &myobs.I, &myobs.Crc, &myobs.omega, &myobs.OMEGADOT, &myobs.idot, &myobs.L2, &myobs.GPSweek,
                &myobs.L2pCODE, &myobs.precision_sat, &myobs.state, &myobs.TGD, &myobs.IODC, &myobs.trans_time, &myobs.time_spare); 
         // allocating the data to the list of struct navops for better control over the algorithm of coordinate determination 
         data[line] = myobs; 
         line ++ ; 
         //parsing the data to csv 
         fprintf(csvoutput ,  "%i;%i;%i;%i;%i;%i;%lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf;%.20lf\n"
-               , myobs.numsat, myobs.day, myobs.month, myobs.hour, myobs.minute, myobs.sec , myobs.mlsec , myobs.a0,myobs.a1 , myobs.a2, myobs.iod, myobs.crs, myobs.delta_n, myobs.M0, myobs.Cuc, myobs.e, myobs.cus, myobs.sqrtA,
-               myobs.toe, myobs.cic, myobs.OMEGA, myobs.cis, myobs.I, myobs.Crc, myobs.omega, myobs.OMEGADOT, myobs.isec, myobs.L2, myobs.GPSweek,
+               , myobs.numsat, myobs.year, myobs.month, myobs.day, myobs.hour, myobs.minute , myobs.seconds , myobs.a0,myobs.a1 , myobs.a2, myobs.iod, myobs.crs, myobs.delta_n, myobs.M0, myobs.Cuc, myobs.e, myobs.cus, myobs.sqrtA,
+               myobs.toe, myobs.cic, myobs.OMEGA, myobs.cis, myobs.I, myobs.Crc, myobs.omega, myobs.OMEGADOT, myobs.idot, myobs.L2, myobs.GPSweek,
                myobs.L2pCODE, myobs.precision_sat, myobs.state, myobs.TGD, myobs.IODC, myobs.trans_time, myobs.time_spare);
     }
     fclose(ninput);
     fclose(csvoutput);
     // extracing coordinates using the algorithm  to be continued .....
     print_data(data[132]);//testing if the struct has stored the wanted values 
+
     return 0; 
 }
